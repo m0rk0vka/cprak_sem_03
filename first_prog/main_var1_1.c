@@ -1,65 +1,59 @@
 #include <stdio.h>
 #include <stdlib.h>
- 
+
 
 typedef struct list
 {
-   struct list *ptr;
-   int field;
-}List;
+    struct list * next;
+    int num;
+}st;
 
 
-List * addelem(List *lst, int number)
+
+void list_bubble_sort(st* head, int size);
+void print_list(st* tmp, int size);
+
+
+int main(void){
+    int err, num, cnt = 0;
+    st* head = NULL;
+    while ((err = scanf("%d", &num)) != EOF && err != 0) {
+        cnt++;
+        st* tmp = (st*) malloc(sizeof(st));
+        tmp->num = num;
+        tmp->next = head;
+        head = tmp;
+    }
+    list_bubble_sort(head, cnt);
+    st* tmp = head;
+    print_list(tmp, cnt);
+    free(head);
+    return 0;
+}
+
+
+void list_bubble_sort(st* head, int size){
+    int i, j, k;
+    for (i = 0; i < size - 1; i++){
+        st* tmp = head;
+        for(j = 0; j < size - i - 1; j++){
+            if (tmp->num > tmp->next->num) {
+                k = tmp->num;
+                tmp->num = tmp->next->num;
+                tmp->next->num = k;
+            }
+            tmp = tmp->next;
+        }
+    }
+}
+
+
+void print_list(st* tmp, int size)
 {
-   List *tmp, *p;
-   tmp = (List*)malloc(sizeof(List));
-   p = lst->ptr; // сохранение указателя на следующий узел
-   lst->ptr = tmp; // предыдущий узел указывает на создаваемый
-   tmp->field = number; // сохранение поля данных добавляемого узла
-   tmp->ptr = p; // созданный узел указывает на следующий элемент
-   return(tmp);
-}
-
-
-void listprint(List *lst)
-{
-   List *p;
-   p = lst;
-   do {
-      printf("%d ", p->field); // вывод значения элемента p
-      p = p->ptr; // переход к следующему узлу
-   } while (p != NULL);
-}
-
-
-void list_bubble_sort(List *lst, int size) {
-   int i, j;
-   for (i = size-1; i >= 0; i--) {
-      List *tmp = lst;
-      for (j = 0; j < i; j++) {
-         if (tmp->field > tmp->ptr->field) {
-            int k = tmp->field;
-            tmp->field = tmp->ptr->field;
-            tmp->ptr->field = k;
-         }
-         tmp = tmp->ptr;
-      }
-   }
-}
-
-
-int main(void) {
-   int N = 0, i = 0, input;
-   List *lst = NULL;
-   List *root = lst;
-   while ((i = scanf("%d", &input)) != EOF) {
-      N++;
-      lst = addelem(lst, i);
-   }
-   printf("hello");
-   list_bubble_sort(root, N);
-   printf("world\n");
-   listprint(root);
-   printf("\n");
-   return 0;
+    int i;
+    for (i=0; i < size; i++){
+        printf("%d ", tmp->num);
+        tmp = tmp-> next;
+    }
+    printf("\n");
 }
