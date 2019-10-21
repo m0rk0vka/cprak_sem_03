@@ -1,42 +1,42 @@
 #include <stdio.h>
-#include <ctype.h>
-#define ml 80
- 
- 
-int getlen(FILE* in, char* buf, int len, int ch){
-    int c, i = 0;
-    
-    len -= 1;
-    while((c = fgetc(in)) != EOF){
-        if((i >= len) || (c == ch) || ferror(in))
-            break;
-        buf[i++] = c;
+#include <string.h>
+#define ml 82
+
+
+int main(int argc, char * argv[]){
+    if (argc == 1){
+        printf("Command line has not file name!\n");
+        return 1;
     }
-    buf[i] = '\0';
-    return i;
-}
-
-
-void str_rev(char* s, int len){
-    for(int  i = 0, j = len - 1; i < j; ++i, --j){
-        char c = s[i];
-        s[i] = s[j];
-        s[j] = c;
+    if (argc > 2){
+        printf("Command line has other arguments!\n");
+        return 1;
     }
-}
-
-
-int main(int argc, char **argv) {
-   FILE *input = fopen(argv[0], "r+");
-   printf("0\n");
-   while(!feof(input)){
-      char buf[ml];
-      int len = getlen(input, buf, sizeof(buf), '\n');
-      str_rev(buf, len);
-      printf("%s\n", buf);
-      fputs(buf, input);
-   }
-   fclose(input);
-   printf("1\n");
-   return 0;
+    if (strlen(argv[1]) > 255){
+        printf("File name is too long");
+        return 1;
+    }
+    char str[ml], buf[ml];
+    int i, j;
+    FILE *file;
+    file = fopen(argv[1], "r+");
+    while (fgets(str, ml - 1, file) != NULL) {
+        int len = strlen(str);
+        buf[len] = '\0';
+        buf[len-1] = '\n';
+        for (i = 0, j = 0; len-2-i >=0 ; i++) {
+            if (str[len-1-j] != '\n') {
+               buf[i] = str[len-1-j];
+               j++;
+           }
+           else {
+                i--;
+                j++;
+            }
+        }
+        fseek(file, -len, SEEK_CUR);
+        fputs(buf, file);
+    }
+    fclose(file);
+    return 0;
 }

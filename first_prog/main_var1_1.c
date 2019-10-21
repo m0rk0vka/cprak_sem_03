@@ -9,7 +9,6 @@ typedef struct list
 }st;
 
 
-
 void list_bubble_sort(st* head, int size);
 void print_list(st* tmp, int size);
 
