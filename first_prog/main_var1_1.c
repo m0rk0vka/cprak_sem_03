@@ -11,6 +11,7 @@ typedef struct list
 
 void list_bubble_sort(st* head, int size);
 void print_list(st* tmp, int size);
+void clear_list(st* tmp, int size);
 
 
 int main(void){
@@ -26,7 +27,7 @@ int main(void){
     list_bubble_sort(head, cnt);
     st* tmp = head;
     print_list(tmp, cnt);
-    free(head);
+    clear_list(head, cnt);
     return 0;
 }
 
@@ -55,4 +56,16 @@ void print_list(st* tmp, int size)
         tmp = tmp-> next;
     }
     printf("\n");
+}
+
+
+void clear_list(st* tmp, int size)
+{
+    int i;
+    for(i=0; i<size; i++)
+    {
+        st* tmp_cl = tmp->next;
+        free(tmp);
+        tmp = tmp_cl;
+    }
 }
