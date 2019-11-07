@@ -1,0 +1,1 @@
+The program wrote the following command: (pr1 arg1> f) && (pr2 | pr3 args ...). The command line arguments of your program are: pr1 arg1 f pr2 pr3 args ... (args are all the other arguments). Demonstrate the performance of your program. If the paternal process receives a SIGTERM signal, it should send it to all the processes that it has launched.
