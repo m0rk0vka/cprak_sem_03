@@ -1,18 +1,23 @@
 #include <sys/types.h>
-#include <sys/stat.h>
+//#include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
 
 
+int fork_1 = 0, fork_2 = 0, fork_3 = 0;
 void sighndlr(int s);
 
 
 int main(int argc, char** argv){
+    printf("Ppid = %d\n", getpid());
     signal(SIGTERM, sighndlr);
     if (argc >= 5){
         if(fork() == 0){
+            fork_1 = getpid();
             int fd = open(argv[3], O_WRONLY|O_CREAT|O_TRUNC, 0666);
             if (fd == -1){
                 perror("");
@@ -29,20 +34,23 @@ int main(int argc, char** argv){
                 pipe(fd);
                 if (fork() == 0)
                 {
+                    fork_2 = getpid();
                     dup2(fd[1], 1);
+                    close(fd[1]);
+                    close(fd[0]);
                     execlp(argv[4], argv[4], (char*)0);
                 }
                 else if (fork() == 0){
+                    fork_3 = getpid();
                     close(fd[1]);
-                    char * str = NULL;
-                    scanf("%s", str);
-                    printf("%s", str);
                     dup2(fd[0], 0);
+                    close(fd[0]);
                     execvp(argv[5], argv+5);
                 }
                 wait(0);
                 close(fd[1]);
                 wait(0);
+                close(fd[0]);
             }
         }
     } else{
@@ -54,5 +62,17 @@ int main(int argc, char** argv){
 }
 
 void sighndlr(int s){
-
+    if (fork_1 != 0){
+        kill(s, fork_1);
+        fork_1 = 0;
+    }
+    if (fork_2 != 0){
+        kill(s, fork_2);
+        fork_2 = 0;
+    }
+    if (fork_3 != 0){
+        kill(s, fork_3);
+        fork_3 = 0;
+    }
+    exit(0);
 }
