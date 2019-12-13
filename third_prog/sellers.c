@@ -1,31 +1,59 @@
 #include <stdio.h>
-#include "header.h"
+#include <stdlib.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <sys/shm.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <signal.h>
+
+int flag = 0;
+
+void end_work(int s){
+    flag = 1;
+}
 
 
 int main(int argc, char ** argv){
+    signal(SIGTERM, end_work);
+    //argv[1] - номер отдела; argv[2] - кол-во посетителей
     int semid;
     int shmid;
-    key_t key = frok("./main", atoi(argv[2]));
+    struct sembuf sops;
+    sops.sem_num = 0;
+    sops.sem_flg = 0;
+    printf("creat %s\n", argv[1]);
+    key_t key = ftok("./test", atoi(argv[1]));
     /* создание массива семафоров из 1 элемента */
-    if ((semid = semget (key, 1, PERMS | IPC_CREAT)) < 0)
+    if ((semid = semget(key, 1, 0666 | IPC_CREAT)) < 0)
         exit(1);
     /* создание сегмента разделяемой памяти */
-    if ((shmid = shmget (key, N_Customers * sizeof (int), PERMS | IPC_CREAT)) < 0)
+    if ((shmid = shmget (key, atoi(argv[2]) * sizeof (int), 0666 | IPC_CREAT)) < 0)
         exit(1);
     int * turn_p = shmat(shmid, 0, 0);
-    while(1){
-        if (semctl(semid, 0, GETVAL, 0))
-            continue;
-        semctl (semid, 0, SETVAL, 1);
-        printf("ya # %d obslyjivay\n", atoi(argv[2]));
-        sleep(1);
+    while(flag == 0){
+        if (turn_p[0] == 0)
+            sleep(1);
+        else {
+            sops.sem_op = -1;
+            semop(semid, &sops, 1);
+            printf("ya # %d obslyjivay sledyshego\n", atoi(argv[1]));
+            int j = 0;
+            while (turn_p[j] != 0){
+                turn_p[j] = turn_p[j+1];
+                j++;
+            }
+            sops.sem_op = 1;
+            semop(semid, &sops, 1);
+            sleep(1);
+        }
     }
     /* удаление массива семафоров */
-    if (semctl (semid, 0, IPC_RMID, (struct semid_ds *) 0) < 0)
+    if (semctl(semid, 0, IPC_RMID, (struct semid_ds *) 0) < 0)
         exit(1);
   /* удаление сегмента разделяемой памяти */
-    shmdt (turn_p);
-    if (shmctl (shmid, IPC_RMID, (struct shmid_ds *) 0) < 0)
+    shmdt(turn_p);
+    if (shmctl(shmid, IPC_RMID, (struct shmid_ds *) 0) < 0)
         exit(1);
     exit(0);
 }
