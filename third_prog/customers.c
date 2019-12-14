@@ -7,7 +7,7 @@
 
 
 int main(int argc, char ** argv){
-    //argv[1] - номер покупателя; argv[2] - кол-во покупателей
+    //argv[2] - номер покупателя; argv[1] - кол-во покупателей
     if (argc <= 10) {
         int semid;
         int shmid;
@@ -17,18 +17,18 @@ int main(int argc, char ** argv){
         sops.sem_flg = 0;
         int i;
         for (i = 0; i < argc; i++){
-            printf("%s ", argv[i]);
+            printf("%s", argv[i]);
         }
         printf("\n");
         //нужен ли массив семафоров на очередь для изменения разделяемой памяти
         for (list_i = 3; list_i < argc; list_i++){
-            printf("pokupatel' %s idet v %s otdel\n", argv[1], argv[list_i]);
+            printf("pokupatel' %s idet v %s otdel\n", argv[2], argv[list_i]);
             key_t key = ftok("./test", atoi(argv[list_i]));
             /* создание массива семафоров из одного элемента */
             if ((semid = semget(key, 1, 0)) < 0)
                 exit(1);
             /* создание сегмента разделяемой памяти */
-            if ((shmid = shmget(key, atoi(argv[2]) * sizeof (int), 0)) < 0)
+            if ((shmid = shmget(key, atoi(argv[1]) * sizeof (int), 0)) < 0)
                 exit(1);
             /*встаём в очередь*/
             sops.sem_op = -1;
@@ -38,10 +38,10 @@ int main(int argc, char ** argv){
             while (turn_p[i] != 0){
                 i++;
             }
-            turn_p[i] = atoi(argv[1]);
+            turn_p[i] = atoi(argv[2]);
             sops.sem_op = 1;
             semop(semid, &sops, 1);
-            while(turn_p[0] != atoi(argv[1])){
+            while(turn_p[0] != atoi(argv[2])){
                 sleep(1);//kak pravil'no vyiti iz ocheredi
             }
             shmdt(turn_p);    //отсоединить сегмент разделяемой памяти;

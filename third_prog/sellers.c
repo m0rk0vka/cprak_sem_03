@@ -10,6 +10,7 @@
 int flag = 0;
 
 void end_work(int s){
+    printf("abc\n");
     flag = 1;
 }
 
@@ -22,17 +23,18 @@ int main(int argc, char ** argv){
     struct sembuf sops;
     sops.sem_num = 0;
     sops.sem_flg = 0;
-    printf("creat %s otdel\n", argv[1]);
     key_t key = ftok("./test", atoi(argv[1]));
     /* создание массива семафоров из 1 элемента */
     if ((semid = semget(key, 1, 0666 | IPC_CREAT)) < 0)
         exit(1);
     /* создание сегмента разделяемой памяти */
-    if ((shmid = shmget (key, atoi(argv[2]) * sizeof (int), 0666 | IPC_CREAT)) < 0)
+    if ((shmid = shmget(key, atoi(argv[2]) * sizeof(int), 0666 | IPC_CREAT)) < 0)
         exit(1);
+    printf("creat %s otdel\n", argv[1]);
     int * turn_p = shmat(shmid, 0, 0);
     while(flag == 0){
         if (turn_p[0] == 0){
+            printf("smert'\n");
             sleep(1);
         }
         else {
