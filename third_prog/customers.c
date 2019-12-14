@@ -15,8 +15,14 @@ int main(int argc, char ** argv){
         struct sembuf sops;
         sops.sem_num = 0;
         sops.sem_flg = 0;
+        int i;
+        for (i = 0; i < argc; i++){
+            printf("%s ", argv[i]);
+        }
+        printf("\n");
         //нужен ли массив семафоров на очередь для изменения разделяемой памяти
-        for (list_i = 2; list_i < argc; list_i++){
+        for (list_i = 3; list_i < argc; list_i++){
+            printf("pokupatel' %s idet v %s otdel\n", argv[1], argv[list_i]);
             key_t key = ftok("./test", atoi(argv[list_i]));
             /* создание массива семафоров из одного элемента */
             if ((semid = semget(key, 1, 0)) < 0)
@@ -41,6 +47,7 @@ int main(int argc, char ** argv){
             shmdt(turn_p);    //отсоединить сегмент разделяемой памяти;
             //sleep(1);
         }
+        printf("pokupatel' %s vyshel iz magazina\n", argv[1]);
         exit(0);
     }
     exit(1);
