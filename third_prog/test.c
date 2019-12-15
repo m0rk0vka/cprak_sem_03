@@ -15,6 +15,7 @@ int main(void){
     char * str_cnt_customers = malloc(5);
     char * str = malloc(5);
     itoa(count_customers, str_cnt_customers);
+    itoa(count_sellers, str_cnt_sellers);
     for(i = 0; i < count_sellers; i++){
         if ((signal_arr[i] = fork()) == 0){
             itoa(i+1, str);
@@ -27,7 +28,7 @@ int main(void){
             str_pid, str_cnt_sellers, str_cnt_customers, (char *) 0);
         _exit(1);
     }
-    wait(0);
+    //wait(0);
     free(str_pid);
     free(str_cnt_customers);
     free(str_cnt_sellers);

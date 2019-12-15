@@ -5,10 +5,12 @@
 
 int main(int argc, char ** argv){
     //int pid_test = atoi(argv[1]);
-    printf("lol\n");
     int count_customers = atoi(argv[3]);
     int count_sellers = atoi(argv[2]);
-    int len_list = rand() % count_sellers;
+    srand(time(NULL));
+    /*int len_list = rand() % count_sellers + 1;
+    printf("len_list = %d\n", len_list);*/
+    int len_list = 3;
     int j, k;
     char * list[len_list+3];
     for(j = 0; j < len_list+3; j++){
@@ -18,13 +20,11 @@ int main(int argc, char ** argv){
     list[1] = argv[3];
     for (k = 0; k < count_customers; k++){
         if (fork() == 0){
-            srand(time(NULL));
             itoa(k+1, list[2]);
             for(j = 3; j < len_list+3; j++){
-                int next = rand() % count_sellers;
+                int next = rand() % count_sellers + 1;
                 itoa(next, list[j]);
             }
-            printf("sozdanie %s pol'zovatelya\n", list[1]);
             execvp("./customers", list);
             _exit(1);
         }
@@ -36,8 +36,9 @@ int main(int argc, char ** argv){
         wait(0);
         //printf("pokupatel' %d zavershilsya\n", i);
     }
-    for (i = 0; i < len_list+3; i++){
-        free(list[i]);
+    //free(list);
+    for (k = 0; k < len_list+3; k++){
+        free(list[k]);
     }
     //kill(pid_test, SIGUSR1);
     return 0;
