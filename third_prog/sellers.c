@@ -10,7 +10,7 @@
 int flag = 0;
 
 void end_work(int s){
-    printf("abc\n");
+    fprintf(stdout, "abc\n");
     flag = 1;
 }
 
@@ -26,7 +26,7 @@ int main(int argc, char ** argv){
     semid = semget(key, 1, 0666 | IPC_CREAT);
     /* создание сегмента разделяемой памяти */
     shmid = shmget(key, atoi(argv[2])*sizeof(int), 0666 | IPC_CREAT);
-    turn_p = shmat(shmid, 0, 0);
+    turn_p = shmat(shmid, NULL, 0);
     semctl(semid, 0, SETVAL, (int) 0);
     sops.sem_num = 0;
     sops.sem_flg = 0;
