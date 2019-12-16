@@ -28,7 +28,7 @@ int main(void){
             str_pid, str_cnt_sellers, str_cnt_customers, (char *) 0);
         _exit(1);
     }
-    //wait(0);
+    wait(0);
     free(str_pid);
     free(str_cnt_customers);
     free(str_cnt_sellers);
