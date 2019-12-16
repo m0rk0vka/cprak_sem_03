@@ -28,18 +28,13 @@ int main(int argc, char ** argv){
             execvp("./customers", list);
             _exit(1);
         }
-        //sleep(1);
     }
-    //sleep(count_customers);
     int i;
     for (i = 0; i < count_customers; i++){
         wait(0);
-        //printf("pokupatel' %d zavershilsya\n", i);
     }
-    //free(list);
     for (k = 0; k < len_list+3; k++){
         free(list[k]);
     }
-    //kill(pid_test, SIGUSR1);
     return 0;
 }

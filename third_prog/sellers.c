@@ -41,28 +41,32 @@ int main(int argc, char ** argv){
     while(1){
         if (flag == 0){
             //ojidanie pokypatelya
-            sops.sem_num = atoi(argv[2]) + 1;
-            sops.sem_op = -1;
-            semop(semid, &sops, 1);
-            //obslyjivay pokypatelya
-            sops.sem_num = 0;
-            sops.sem_op = -1;
-            semop(semid, &sops, 1);
-            printf("ya %s obslyjivay sledyshego pod nomerom = %d\n", argv[1], turn_p[0]);
-            sops.sem_num = turn_p[0];
-            sops.sem_op = 1;
-            semop(semid, &sops, 1);
-            int j = 0;
-            while (turn_p[j] != 0){
-                turn_p[j] = turn_p[j+1];
-                j++;
+            if (turn_p[0] != 0){
+                sops.sem_num = atoi(argv[2]) + 1;
+                sops.sem_op = -1;
+                semop(semid, &sops, 1);
+                //obslyjivay pokypatelya
+                sops.sem_num = 0;
+                sops.sem_op = -1;
+                semop(semid, &sops, 1);
+                printf("ya %s obslyjivay sledyshego pod nomerom = %d\n", argv[1], turn_p[0]);
+                sops.sem_num = turn_p[0];
+                sops.sem_op = 1;
+                semop(semid, &sops, 1);
+                int j = 0;
+                while ((j<atoi(argv[2])) && (turn_p[j] != 0)){
+                    turn_p[j] = turn_p[j+1];
+                    j++;
+                }
+                sops.sem_num = 0;
+                sops.sem_op = 1;
+                semop(semid, &sops, 1);
             }
-            sops.sem_num = 0;
-            sops.sem_op = 1;
-            semop(semid, &sops, 1);
+            sleep(1);
         }
-        else
+        else{
             break;
+        }
     }
     printf("otdel %s okonchil raboty\n", argv[1]);
     /* удаление массива семафоров */
@@ -70,5 +74,5 @@ int main(int argc, char ** argv){
   /* удаление сегмента разделяемой памяти */
     shmdt(turn_p);
     shmctl(shmid, IPC_RMID, NULL);
-    exit(0);
+    return 0;
 }

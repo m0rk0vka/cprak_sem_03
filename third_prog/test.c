@@ -36,8 +36,7 @@ int main(void){
     //zakryvaem magazin
     int l;
     for (l = 0; l < count_sellers; l++){
-        printf("pid = %d , ", signal_arr[l]);
-        printf("kill vernyl = %d \n", kill(signal_arr[l], SIGTERM));
+        printf("kill vernyl = %d for pid = %d\n", kill(signal_arr[l], SIGTERM), signal_arr[l]);
     }
     return 0;
 }
