@@ -4,7 +4,8 @@
 
 
 int main(void){
-    int count_sellers = 3;
+    printf("magazin otkrylsya\n");
+    int count_sellers = 5;
     int count_customers = 3;
     int i;
     char * str_pid = malloc(10);
@@ -23,6 +24,7 @@ int main(void){
         }
     }
     sleep(count_sellers);
+    //zapysk pokypatelei
     if (fork() == 0){
         execlp("./creat_customers", "./creat_customers",
             str_pid, str_cnt_sellers, str_cnt_customers, (char *) 0);
@@ -36,7 +38,9 @@ int main(void){
     //zakryvaem magazin
     int l;
     for (l = 0; l < count_sellers; l++){
-        printf("kill vernyl = %d for pid = %d\n", kill(signal_arr[l], SIGTERM), signal_arr[l]);
+        kill(signal_arr[l], SIGTERM);
     }
+    sleep(count_sellers);
+    printf("magazin zakrylsya\n");
     return 0;
 }

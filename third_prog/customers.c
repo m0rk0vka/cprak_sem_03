@@ -8,6 +8,7 @@
 
 
 int main(int argc, char ** argv){
+    printf("pokypatel' %s zashel v magazin\n", argv[2]);
     //argv[2] - номер покупателя; argv[1] - кол-во покупателей
     int semid, shmid, list_i, i;
     int *turn_p;
@@ -31,7 +32,7 @@ int main(int argc, char ** argv){
             i++;
         }
         turn_p[i] = atoi(argv[2]);
-        printf("pokupatel' %d pri (i = %d) vstal v ochered' v %s otdel po key =%d \n", turn_p[i], i, argv[list_i], key);
+        printf("pokupatel' %d vstal v ochered' v %s otdel\n", turn_p[i], argv[list_i]);
         sops.sem_num = 0;
         sops.sem_op = 1;
         semop(semid, &sops, 1);

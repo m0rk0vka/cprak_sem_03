@@ -10,7 +10,6 @@
 int flag = 0;
 
 void end_work(int s){
-    printf("signal na okonchanie\n");
     flag = 1;
 }
 
@@ -37,9 +36,9 @@ int main(int argc, char ** argv){
         turn_p[i] = 0;
     }
     semctl(semid, 0, SETVAL, (int) 1); //0-й семафор для пользования очередью
-    printf("otdel %s sozdaet key = %d\n", argv[1], key);
-    while(1){
-        if (flag == 0){
+    printf("otdel %s otkryvaetsya\n", argv[1]);
+    while(flag == 0){
+        //if (flag == 0){
             //ojidanie pokypatelya
             if (turn_p[0] != 0){
                 sops.sem_num = atoi(argv[2]) + 1;
@@ -49,7 +48,7 @@ int main(int argc, char ** argv){
                 sops.sem_num = 0;
                 sops.sem_op = -1;
                 semop(semid, &sops, 1);
-                printf("ya %s obslyjivay sledyshego pod nomerom = %d\n", argv[1], turn_p[0]);
+                printf("otdel %s obslyjivaet pokypalya %d\n", argv[1], turn_p[0]);
                 sops.sem_num = turn_p[0];
                 sops.sem_op = 1;
                 semop(semid, &sops, 1);
@@ -63,16 +62,16 @@ int main(int argc, char ** argv){
                 semop(semid, &sops, 1);
             }
             sleep(1);
-        }
+        /*}
         else{
             break;
-        }
+        }*/
     }
     printf("otdel %s okonchil raboty\n", argv[1]);
     /* удаление массива семафоров */
     semctl(semid, 0, IPC_RMID, (int) 0);
   /* удаление сегмента разделяемой памяти */
     shmdt(turn_p);
-    shmctl(shmid, IPC_RMID, NULL);
+    shmctl(shmid, IPC_RMID, 0);
     return 0;
 }
